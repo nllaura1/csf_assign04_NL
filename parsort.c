@@ -27,27 +27,32 @@ int main( int argc, char **argv ) {
   int fd = open(filename, O_RDWR);
   if (fd < 0) {
     // file couldn't be opened: handle error and exit
+    perror("open failed");
+    exit(1);
   }
 
-  int numInts
 
   // determine file size and number of elements
   unsigned long file_size, num_elements;
   struct stat statbuf;
   int rc = fstat( fd, &statbuf );
   if ( rc != 0 ) {
-      // handle fstat error and exit
+    // handle fstat error and exit
+    perror("fstat error");
+    exit(1);  
   }
   // statbuf.st_size indicates the number of bytes in the file
-
+  int file_size_in_bytes = statbuf.st_size
+  int numInts64 = statbuf.st_size / sizeof(int64_t);
 
   // mmap the file data
   int64_t *arr;
-    arr = mmap( NULL, file_size_in_bytes, PROT_READ | PROT_WRITE,
+    arr = mmap( NULL, statbuf.st_size, PROT_READ | PROT_WRITE,
       MAP_SHARED, fd, 0 );
   close( fd ); // file can be closed now
   if ( arr == MAP_FAILED ) {
-  // handle mmap error and exit
+    perror("map failed");
+    exit(1);
   }
   // *arr now behaves like a standard array of int64_t.
   // Be careful though! Going off the end of the array will
@@ -65,6 +70,7 @@ int main( int argc, char **argv ) {
 
   // Unmap the file data
   // TODO: unmap the file data
+  munmap( arr, file_size_in_bytes );
 
   return 0;
 }
