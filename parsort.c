@@ -26,6 +26,7 @@ int main( int argc, char **argv ) {
 
   // open the named file
   // TODO: open the named file
+  
 
   // determine file size and number of elements
   unsigned long file_size, num_elements;
