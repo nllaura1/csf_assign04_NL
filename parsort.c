@@ -42,7 +42,7 @@ int main( int argc, char **argv ) {
   }
   // statbuf.st_size indicates the number of bytes in the file
   file_size = statbuf.st_size;
-  int numInts64 = file_size / sizeof(int64_t);
+  num_elements = file_size / sizeof(int64_t);
 
   // mmap the file data
   int64_t *arr;
