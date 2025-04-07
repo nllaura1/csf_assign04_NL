@@ -23,18 +23,37 @@ int main( int argc, char **argv ) {
   }
 
   int fd;
-
   // open the named file
-  // TODO: open the named file
-  
+  int fd = open(filename, O_RDWR);
+  if (fd < 0) {
+    // file couldn't be opened: handle error and exit
+  }
+
+  int numInts
 
   // determine file size and number of elements
   unsigned long file_size, num_elements;
-  // TODO: determine the file size and number of elements
+  struct stat statbuf;
+  int rc = fstat( fd, &statbuf );
+  if ( rc != 0 ) {
+      // handle fstat error and exit
+  }
+  // statbuf.st_size indicates the number of bytes in the file
+
 
   // mmap the file data
   int64_t *arr;
-  // TODO: mmap the file data
+    arr = mmap( NULL, file_size_in_bytes, PROT_READ | PROT_WRITE,
+      MAP_SHARED, fd, 0 );
+  close( fd ); // file can be closed now
+  if ( arr == MAP_FAILED ) {
+  // handle mmap error and exit
+  }
+  // *arr now behaves like a standard array of int64_t.
+  // Be careful though! Going off the end of the array will
+  // silently extend the file, which can rapidly lead to
+  // disk space depletion!
+  
 
   // Sort the data!
   int success;
