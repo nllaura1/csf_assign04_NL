@@ -22,9 +22,8 @@ int main( int argc, char **argv ) {
     exit( 1 );
   }
 
-  int fd;
   // open the named file
-  int fd = open(filename, O_RDWR);
+  int fd = open(argv[1], O_RDWR);
   if (fd < 0) {
     // file couldn't be opened: handle error and exit
     perror("open failed");
@@ -42,12 +41,12 @@ int main( int argc, char **argv ) {
     exit(1);  
   }
   // statbuf.st_size indicates the number of bytes in the file
-  int file_size_in_bytes = statbuf.st_size
-  int numInts64 = statbuf.st_size / sizeof(int64_t);
+  file_size = statbuf.st_size;
+  int numInts64 = file_size / sizeof(int64_t);
 
   // mmap the file data
   int64_t *arr;
-    arr = mmap( NULL, statbuf.st_size, PROT_READ | PROT_WRITE,
+    arr = mmap( NULL, file_size, PROT_READ | PROT_WRITE,
       MAP_SHARED, fd, 0 );
   close( fd ); // file can be closed now
   if ( arr == MAP_FAILED ) {
@@ -70,7 +69,7 @@ int main( int argc, char **argv ) {
 
   // Unmap the file data
   // TODO: unmap the file data
-  munmap( arr, file_size_in_bytes );
+  munmap( arr, file_size );
 
   return 0;
 }
