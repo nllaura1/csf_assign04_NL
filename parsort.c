@@ -217,7 +217,7 @@ int quicksort( int64_t *arr, unsigned long start, unsigned long end, unsigned lo
     // fork failed
     // ...handle error...
     perror("fork failed");
-    exit(1);
+    return 0;
   } else {
     // in parent
     right_success = quicksort( arr, mid + 1, end, par_threshold );
@@ -228,22 +228,22 @@ int quicksort( int64_t *arr, unsigned long start, unsigned long end, unsigned lo
       // waitpid failed
       // ...handle error...
       perror("waitpid failed");
-      exit(1);
+      return 0;
     } else {
       // check status of child
       if ( !WIFEXITED( wstatus ) ) {
         // child did not exit normally (e.g., it was terminated by a signal)
         // ...handle child failure...
-        perror("child did not exit normally");
-        exit(1);
+        fprintf(stderr, "child did not exit normally\n");
+        return 0;
       } else if ( WEXITSTATUS( wstatus ) != 0 ) {
         // child exited with a non-zero exit code
         // ...handle child failure...
-        perror("child exited with a non-zero exit code");
-        exit(1);
+        fprintf(stderr, "child exited with a non-zero exit code\n");
+        return 0;
       } else {
         // child exited with exit code zero (it was successful)
-        exit(0);
+        left_success = 1;
         
       }
     }
@@ -252,5 +252,4 @@ int quicksort( int64_t *arr, unsigned long start, unsigned long end, unsigned lo
 
   return left_success && right_success;
 }
-
 // TODO: define additional helper functions if needed
