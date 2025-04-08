@@ -243,7 +243,7 @@ int quicksort( int64_t *arr, unsigned long start, unsigned long end, unsigned lo
         exit(1);
       } else {
         // child exited with exit code zero (it was successful)
-        exit(0)
+        exit(0);
         
       }
     }
