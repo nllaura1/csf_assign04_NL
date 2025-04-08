@@ -203,8 +203,52 @@ int quicksort( int64_t *arr, unsigned long start, unsigned long end, unsigned lo
   // Recursively sort the left and right partitions
   int left_success, right_success;
   // TODO: modify this code so that the recursive calls execute in child processes
-  left_success = quicksort( arr, start, mid, par_threshold );
-  right_success = quicksort( arr, mid + 1, end, par_threshold );
+
+  pid_t child_pid = fork();
+  if ( child_pid == 0 ) {
+    // executing in the child
+    // ...do work...
+    left_success = quicksort( arr, start, mid, par_threshold );
+    if ( left_success )
+      exit( 0 );
+    else
+      exit( 1 );
+  } else if ( child_pid < 0 ) {
+    // fork failed
+    // ...handle error...
+    perror("fork failed");
+    exit(1);
+  } else {
+    // in parent
+    right_success = quicksort( arr, mid + 1, end, par_threshold );
+
+    int rc, wstatus;
+    rc = waitpid( child_pid, &wstatus, 0 );
+    if ( rc < 0 ) {
+      // waitpid failed
+      // ...handle error...
+      perror("waitpid failed");
+      exit(1);
+    } else {
+      // check status of child
+      if ( !WIFEXITED( wstatus ) ) {
+        // child did not exit normally (e.g., it was terminated by a signal)
+        // ...handle child failure...
+        perror("child did not exit normally");
+        exit(1);
+      } else if ( WEXITSTATUS( wstatus ) != 0 ) {
+        // child exited with a non-zero exit code
+        // ...handle child failure...
+        perror("child exited with a non-zero exit code");
+        exit(1);
+      } else {
+        // child exited with exit code zero (it was successful)
+        exit(0)
+        
+      }
+    }
+  }
+  
 
   return left_success && right_success;
 }
